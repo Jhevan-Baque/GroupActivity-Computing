@@ -95,7 +95,7 @@ void organizeParty() {
 int main() {
     int choice;
     do {
-        cout << "Select an activity:" << endl;
+        cout << "\nSelect an activity:" << endl;
         cout << "1. Make a Sandwich (Sequential)" << endl;
         cout << "2. Prepare Coffee and Toast (Concurrent)" << endl;
         cout << "3. Perform House Chores (Parallel)" << endl;
@@ -124,7 +124,6 @@ int main() {
                 cout << "Invalid Choice!" << endl;
                 break;
         }
-        cin >> choice;
     } while (choice != 5);
 
     return 0;
