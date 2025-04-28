@@ -74,7 +74,6 @@ void decorateVenue() {
     }
 }
 
-// This one will simulate concurrent (alternating two types of food prep)
 void prepareFood() {
     cout << "Preparing Food (Concurrent - Alternating steps):" << endl;
     string CookingSteps[3] = {"1. Cooking main dish", "2. Preparing appetizers", "3. Making desserts"};
@@ -116,8 +115,53 @@ void organizeParty() {
     t3.join();
 }
 
+void packBoxSequential() {
+    cout << "\nPacking boxes sequentially...\n" << endl;
+    for (int i = 1; i <= 3; ++i) {
+        cout << "Packing Box " << i << "..." << endl;
+        this_thread::sleep_for(chrono::seconds(2));
+        cout << "Box " << i << " packed!" << endl;
+    }
+    cout << "\nAll boxes packed (Sequential)." << endl;
+}
+
+void packBox(string boxName) {
+    cout << "Packing " << boxName << "..." << endl;
+    this_thread::sleep_for(chrono::seconds(2));
+    cout << boxName << " packed!" << endl;
+}
+
+void packBoxParallel() {
+    cout << "\n Packing boxes in parallel...\n" << endl;
+    thread t1(packBox, "Box 1");
+    thread t2(packBox, "Box 2");
+    thread t3(packBox, "Box 3");
+
+    t1.join();
+    t2.join();
+    t3.join();
+}
+
+// Option 5
+void packingMenu() {
+    int subChoice;
+    cout << "\nChoose Packing Method:" << endl;
+    cout << "1. Sequential Packing" << endl;
+    cout << "2. Parallel Packing" << endl;
+    cout << ": ";
+    cin >> subChoice;
+
+    if (subChoice == 1) {
+        packBoxSequential();
+    } else if (subChoice == 2) {
+        packBoxParallel();
+    } else {
+        cout << "\nInvalid Choice!" << endl;
+    }
+}
 
 
+// Main menu
 int main() {
     int choice;
     do {
@@ -126,7 +170,8 @@ int main() {
         cout << "2. Prepare Coffee and Toast (Concurrent)" << endl;
         cout << "3. Perform House Chores (Parallel)" << endl;
         cout << "4. Organize a Party (Concurrent and Parallel)" << endl;
-        cout << "5. Exit" << endl;
+        cout << "5. Packing Boxes (Sequential or Parallel)" << endl;
+        cout << "6. Exit" << endl;
         cout << ": ";
         cin >> choice;
 
@@ -144,13 +189,16 @@ int main() {
                 organizeParty();
                 break;
             case 5:
-                cout << "\nExiting..";
+                packingMenu();
+                break;
+            case 6:
+                cout << "\nExiting..." << endl;
                 break;
             default:
                 cout << "\nInvalid Choice!" << endl;
                 break;
         }
-    } while (choice != 5);
+    } while (choice != 6);
 
     return 0;
 }
