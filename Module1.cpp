@@ -6,7 +6,7 @@ using namespace std;
 // Activity 1 (Sequential)
 
 void makeSandwich() {
-    string Steps[5] = {"1. Get Bread", "2. Add Cheese", "3. Add Ham", "4. Assemble Sandiwch"};
+    string Steps[4] = {"1. Get Bread", "2. Add Cheese", "3. Add Ham", "4. Assemble Sandiwch"};
     for (int i = 0 ; i < 4; i++) {
         cout << Steps[i] << endl;
         this_thread::sleep_for(chrono::milliseconds(200));
@@ -17,10 +17,12 @@ void makeSandwich() {
 
 void prepareCoffeeAndToast() {
     cout << "Preparing Coffee and Toast (Concurrent):" << endl;
-    string CoffeeSteps[4] = {"1. Grinding  coffee", "2. Heating water", "5: Brewing coffee"};
-    string ToastSteps[4] = {"1. Placing toast in toaster", "2. Selecting temperature ", "3. Toasting Bread", ""};
+    string CoffeeSteps[3] = {"1. Grinding  coffee", "2. Heating water", "3: Brewing coffee"};
+    string ToastSteps[3] = {"1. Placing toast in toaster", "2. Selecting temperature ", "3. Toasting Bread"};
+    
     int i = 0;
     bool con = true;
+    
     while (i != 3) {
         if (con == true) {
             con = false;
@@ -38,7 +40,7 @@ void prepareCoffeeAndToast() {
 // Activity 3 (Parallel)
 
 void washDishes() {
-    string Steps[5] = {"1. Get the dishes", "2. Fill the sink", "3. Wash the dishes", "4. Rinse"};
+    string Steps[4] = {"1. Get the dishes", "2. Fill the sink", "3. Wash the dishes", "4. Rinse"};
     for (int i = 0 ; i < 4; i++) {
         cout << Steps[i] << endl;
         this_thread::sleep_for(chrono::milliseconds(200));
@@ -46,7 +48,7 @@ void washDishes() {
 }
 
 void foldClothes() {
-    string Steps[4] = {"1. Lay the clothe Flat", "2. Fold the Sides", "3. Fold the Top"};
+    string Steps[3] = {"1. Lay the clothes Flat", "2. Fold the Sides", "3. Fold the Top"};
     for (int i = 0 ; i < 3; i++) {
         cout << Steps[i] << endl;
         this_thread::sleep_for(chrono::milliseconds(200));
@@ -65,30 +67,54 @@ void PerformHouseChores() {
 // Activity 4 (Concurrent and Parallel)
 
 void decorateVenue() {
-    cout << "Decorating venue.." << endl;
+    string Steps[3] = {"1. Hanging decorations", "2. Setting up tables", "3. Placing centerpieces"};
+    for (int i = 0; i < 3; i++) {
+        cout << Steps[i] << endl;
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
 }
 
+// This one will simulate concurrent (alternating two types of food prep)
 void prepareFood() {
-    cout << "Preparing food (Concurrent):" << endl;
+    cout << "Preparing Food (Concurrent - Alternating steps):" << endl;
+    string CookingSteps[3] = {"1. Cooking main dish", "2. Preparing appetizers", "3. Making desserts"};
+    string PlatingSteps[3] = {"1. Setting plates", "2. Garnishing dishes", "3. Arranging on tables"};
+
+    int i = 0;
+    bool isCookingTurn = true;
+
+    while (i < 3) {
+        if (isCookingTurn) {
+            cout << CookingSteps[i] << endl;
+            isCookingTurn = false;
+        } else {
+            cout << PlatingSteps[i] << endl;
+            isCookingTurn = true;
+            i++;
+        }
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
 }
 
 void organizeGames() {
-    cout << "Organizing games.." << endl;
+    string Steps[3] = {"1. Setting up games area", "2. Preparing game materials", "3. Briefing participants"};
+    for (int i = 0; i < 3; i++) {
+        cout << Steps[i] << endl;
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
 }
 
 void organizeParty() {
-    cout << "Organizing party.." << endl;
+    cout << "Organizing Party (Concurrent + Parallel):" << endl;
 
-    thread decorationThread(decorateVenue);
-    thread food_thread(prepareFood);
-    thread games_thread(organizeGames);
+    thread t1(decorateVenue);
+    thread t2(prepareFood);
+    thread t3(organizeGames);
 
-    decorationThread.join();
-    food_thread.join();
-    games_thread.join();
-
+    t1.join();
+    t2.join();
+    t3.join();
 }
-
 
 
 
@@ -118,10 +144,10 @@ int main() {
                 organizeParty();
                 break;
             case 5:
-                cout << "Exiting..";
+                cout << "\nExiting..";
                 break;
             default:
-                cout << "Invalid Choice!" << endl;
+                cout << "\nInvalid Choice!" << endl;
                 break;
         }
     } while (choice != 5);
