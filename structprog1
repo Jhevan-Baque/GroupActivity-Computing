@@ -1,0 +1,171 @@
+import os
+
+def pause():
+    input("Press Enter to continue")
+
+def Restaurant():
+
+    bal = 0
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("--- Welcome to Python Restaurant ---")
+        print("Menu:")
+        print("1. Burger - ₱120")
+        print("2. Pizza - ₱300")
+        print("3. Pasta - ₱250")
+        print("4. Fries - ₱80")
+        print("5. Exit ")
+
+        choice = eval(input("Select an item: "))
+        if choice == 1:
+            print("Added Burger to your order")
+            bal += 120
+            pause()
+        elif choice == 2:
+            print("Added Pizza to your order")
+            bal += 300
+            pause()
+        elif choice == 3:
+            print("Added Pasta to your order")
+            bal += 250
+            pause()
+        elif choice == 4:
+            print("Added Fries to your order")
+            bal += 80
+            pause()
+        elif choice == 5:
+            print("\n--- Order Summary ---")
+            if bal >= 500:
+                newbal = bal * 0.90
+            else:
+                newbal = bal
+            print("Total before discount:" + str(bal))
+            print("Final Amount to Pay:" + str(newbal))
+            pause()
+            break
+        else:
+            print("Invalid Choice")
+            pause()
+
+
+def Grocery():
+    total = 0
+    summary = ""
+
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("--- Grocery Store ---")
+        print("1: View Items")
+        print("2: Add to Cart")
+        print("3: Checkout")
+        print("4: Exit")
+
+        choice = eval(input("Enter choice: "))
+        if choice == 1:
+            print("\n<< Items >>")
+            print("Rice: ₱50")
+            print("Eggs: ₱7")
+            print("Milk: ₱60")
+            print("Bread: ₱35\n")
+            pause()
+        elif choice == 2:
+            add = str(input("Enter Item to Add: "))
+            quantity = eval(input("Enter quantity: "))
+            if quantity >= 1:
+                if add.upper() == "RICE":
+                    itemtotal = (50 * quantity)
+                    print(f"Added {quantity} Egg(s) to cart.")
+                    summary += f"Egg(s) x {quantity} = {itemtotal}\n"
+                elif (add.upper() == "EGGS") or (add.upper() == "EGG"):
+                    itemtotal = (7 * quantity)
+                    print(f"Added {quantity} Egg(s) to cart.")
+                    summary += f"Egg(s) x {quantity} = {itemtotal}\n"
+                elif add.upper() == "MILK":
+                    itemtotal = (60 * quantity)
+                    print(f"Added {quantity} Milk(s) to cart.")
+                    summary += f"Milk x {quantity} = {itemtotal}\n"
+                elif add.upper() == "BREAD":
+                    itemtotal = (35 * quantity)
+                    print(f"Added {quantity} Bread(s) to cart.")
+                    summary += f"Bread x {quantity} = {itemtotal}\n"
+                else:
+                    print("Invalid Item")
+                    pause()
+                    continue
+                pause()
+            else:
+                print("Only Positive Numbers")
+                pause()
+                continue
+            total += itemtotal
+        elif choice == 3:
+            if summary == "":
+                print("You didn't put any items!")
+                continue
+            print("--- Cart Summary ---")
+            print(summary)
+            vat = total * 0.12
+            print("Subtotal: ₱" + str(total))
+            print(f"VAT (12%): ₱{vat:.2f}")
+            print("Total: ₱ " + str(vat + total) + '\n')
+            pause()
+        elif choice == 4:
+            print("Exiting.. Thankyou for Shopping!")
+            break
+        else:
+            print("Invalid Choice")
+            pause()
+
+def fitness():
+    totalsteps = 0
+
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("--- Fitness Tracker ---")
+        print("1. Add Steps")
+        print("2. View Total Steps")
+        print("3. View Calories Burned")
+        print("4. Exit")
+
+        choice = eval(input("Enter Choice: "))
+
+        if choice == 1:
+            steps = eval(input("How many steps? "))
+            print(f"{steps} steps added!")
+            totalsteps += steps
+            pause()
+        elif choice == 2:
+            print(f"Total Steps: {totalsteps}")
+            pause()
+        elif choice == 3:
+            calories = totalsteps * 0.04
+            print(f"Calories Burned: {calories}")
+            pause()
+        elif choice == 4:
+            print("Keep moving! Goodbye!")
+            break
+        else:
+            print("Invalid Choice")
+            pause()
+
+
+while True:
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("1. Python Restaurant")
+    print("2. Grocery Store")
+    print("3. Fitness Tracker")
+    print("4. Exit")
+
+    choice = eval(input("Pick a System: "))
+
+    if choice == 1:
+        Restaurant()
+    elif choice == 2:
+        Grocery()
+    elif choice == 3:
+        fitness()
+    elif choice == 4:
+        print("Thankyou for using the System!")
+        break
+    else:
+        print("Invalid Choice")
