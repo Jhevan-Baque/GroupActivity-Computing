@@ -1,0 +1,35 @@
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+using namespace std;
+
+mutex print_mutex;
+
+void PrintWords(int value) {
+    string Words[4] = {"Be Brave", "Fortitude", "Excellence", "Uprightness"};
+    for (int i = 1; i < 801; i++) {
+        cout << i << ". " << Words[value] << " ";
+    }
+    lock_guard<mutex> lock(print_mutex);
+}
+
+
+void ThreadedPrint() {
+    cout << "Threaded Printing (Parallel).." << endl;
+    thread t1(PrintWords, 0);
+    thread t2(PrintWords, 1);
+    thread t3(PrintWords, 2);
+    thread t4(PrintWords, 3);
+
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    cout << endl << "Jhevan P. Baque";
+}
+
+int main() {
+    ThreadedPrint();
+    return 0;
+}
