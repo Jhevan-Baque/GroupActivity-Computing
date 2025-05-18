@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <chrono>
 #include <mutex>
 using namespace std;
 
@@ -8,15 +7,20 @@ mutex print_mutex;
 
 void PrintWords(int value) {
     string Words[4] = {"Be Brave", "Fortitude", "Excellence", "Uprightness"};
-    for (int i = 1; i < 801; i++) {
-        cout << i << ". " << Words[value] << " ";
+    string output;
+    output.reserve(Words[value].size() * 800 + 800); // reserve for performance
+    for (int i = 1; i <= 800; i++) {
+        output += Words[value];
+        output += to_string(i) + ". " + Words[value] + " ";
     }
-    lock_guard<mutex> lock(print_mutex);
-}
 
+    lock_guard<mutex> lock(print_mutex);
+    cout << output;
+}
 
 void ThreadedPrint() {
     cout << "Threaded Printing (Parallel).." << endl;
+
     thread t1(PrintWords, 0);
     thread t2(PrintWords, 1);
     thread t3(PrintWords, 2);
@@ -26,7 +30,8 @@ void ThreadedPrint() {
     t2.join();
     t3.join();
     t4.join();
-    cout << endl << "Jhevan P. Baque";
+
+    cout << endl << "Jhevan P. Baque" << endl;
 }
 
 int main() {
