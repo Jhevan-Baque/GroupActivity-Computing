@@ -19,33 +19,33 @@ void saveToFile(const string& filename) {
     file.close();
 }
 
-void loadFromFile(const string& filename) {
-    ifstream file(filename);
-    for (int i = 0; i < ROOM_COUNT; ++i)
-        file >> rooms[i];
-    file.close();
-}
-
 void bookRooms(int thread_id) {
     for (int i = 0; i < 25; ++i) {
         int room_id = rand() % ROOM_COUNT;
 
-        lock_guard<mutex> lock(room_mutex); // Ensures thread safety
+        lock_guard<mutex> lock(room_mutex);
         if (rooms[room_id] == 0) {
             rooms[room_id] = 1;
-            cout << "Booked room: " << room_id << " [Thread " << thread_id << "]" << endl;
+            cout << "Booked room: " << room_id << endl;
             success_count++;
         } else {
-            cout << "Failed to book room: " << room_id << " (already taken) [Thread " << thread_id << "]" << endl;
+            cout << "Failed to book room: " << room_id << " (already taken)" << endl;
         }
     }
 }
 
 int main() {
-    srand(42);  // For reproducibility
+    int proceed;
+    cout << "Test Case 4: Parallel Booking (50 rooms via 4 threads)." << endl;
+    cout << "Enter 1 to proceed: ";
+    cin >> proceed;
+    if (proceed != 1) {
+        cout << "Aborted." << endl;
+        return 0;
+    }
 
-    // Uncomment to test with all rooms booked
-    // fill(begin(rooms), end(rooms), 1);
+    srand(42); // reproducible
+    fill(rooms, rooms + ROOM_COUNT, 0); // ensure rooms are free
 
     thread t1(bookRooms, 1);
     thread t2(bookRooms, 2);
