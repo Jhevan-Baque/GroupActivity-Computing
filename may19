@@ -1,65 +1,45 @@
 #include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <ctime>
 #include <thread>
 #include <mutex>
+#include <vector>
+#include <cstdlib>  // for rand(), srand()
+#include <ctime>    // for time()
 
-using namespace std;
+const int TOTAL_ROOMS = 50;
+int rooms[TOTAL_ROOMS] = {0}; // 0 = available, 1 = booked
+std::mutex room_mutex;
+int successful_bookings = 0;
 
-const int ROOM_COUNT = 50;
-int rooms[ROOM_COUNT] = {0};
-mutex room_mutex;
-int success_count = 0;
+void book_rooms(int thread_id, int attempts) {
+    for (int i = 0; i < attempts; ++i) {
+        int room_to_book = rand() % TOTAL_ROOMS;
 
-void saveToFile(const string& filename) {
-    ofstream file(filename);
-    for (int i = 0; i < ROOM_COUNT; ++i)
-        file << rooms[i] << " ";
-    file.close();
-}
-
-void bookRooms(int thread_id) {
-    for (int i = 0; i < 25; ++i) {
-        int room_id = rand() % ROOM_COUNT;
-
-        lock_guard<mutex> lock(room_mutex);
-        if (rooms[room_id] == 0) {
-            rooms[room_id] = 1;
-            cout << "Booked room: " << room_id << endl;
-            success_count++;
+        std::lock_guard<std::mutex> lock(room_mutex); // Automatically unlocks when out of scope
+        if (rooms[room_to_book] == 0) {
+            rooms[room_to_book] = 1;
+            ++successful_bookings;
+            std::cout << "Booked room: " << room_to_book << std::endl;
         } else {
-            cout << "Failed to book room: " << room_id << " (already taken)" << endl;
+            std::cout << "Failed to book room: " << room_to_book << " (already taken)" << std::endl;
         }
     }
 }
 
 int main() {
-    int proceed;
-    cout << "Test Case 4: Parallel Booking (50 rooms via 4 threads)." << endl;
-    cout << "Enter 1 to proceed: ";
-    cin >> proceed;
-    if (proceed != 1) {
-        cout << "Aborted." << endl;
-        return 0;
+    srand(42); // For reproducibility
+
+    // Create and run 4 threads, each making 25 booking attempts
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i) {
+        threads.emplace_back(book_rooms, i, 25);
     }
 
-    srand(42); // reproducible
-    fill(rooms, rooms + ROOM_COUNT, 0); // ensure rooms are free
+    // Join all threads
+    for (auto& t : threads) {
+        t.join();
+    }
 
-    thread t1(bookRooms, 1);
-    thread t2(bookRooms, 2);
-    thread t3(bookRooms, 3);
-    thread t4(bookRooms, 4);
+    std::cout << "Total bookings: " << successful_bookings << "/100" << std::endl;
 
-    t1.join();
-    t2.join();
-    t3.join();
-    t4.join();
-
-    cout << "Total bookings: " << success_count << "/100" << endl;
-    cout << "Your Name" << endl;
-
-    saveToFile("parallel_bookings.txt");
     return 0;
 }
