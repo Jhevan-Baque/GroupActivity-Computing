@@ -1,40 +1,65 @@
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <ctime>
 #include <thread>
 #include <mutex>
+
 using namespace std;
 
-mutex print_mutex;
+const int ROOM_COUNT = 50;
+int rooms[ROOM_COUNT] = {0};
+mutex room_mutex;
+int success_count = 0;
 
-void PrintWords(int value) {
-    string Words[4] = {"Be Brave", "Fortitude", "Excellence", "Uprightness"};
-    string output;
-    output.reserve(Words[value].size() * 800 + 800); // reserve for performance
-    for (int i = 1; i <= 800; i++) {
-        output += Words[value];
-        output += to_string(i) + ". " + Words[value] + " ";
-    }
-
-    lock_guard<mutex> lock(print_mutex);
-    cout << output;
+void saveToFile(const string& filename) {
+    ofstream file(filename);
+    for (int i = 0; i < ROOM_COUNT; ++i)
+        file << rooms[i] << " ";
+    file.close();
 }
 
-void ThreadedPrint() {
-    cout << "Threaded Printing (Parallel).." << endl;
+void loadFromFile(const string& filename) {
+    ifstream file(filename);
+    for (int i = 0; i < ROOM_COUNT; ++i)
+        file >> rooms[i];
+    file.close();
+}
 
-    thread t1(PrintWords, 0);
-    thread t2(PrintWords, 1);
-    thread t3(PrintWords, 2);
-    thread t4(PrintWords, 3);
+void bookRooms(int thread_id) {
+    for (int i = 0; i < 25; ++i) {
+        int room_id = rand() % ROOM_COUNT;
+
+        lock_guard<mutex> lock(room_mutex); // Ensures thread safety
+        if (rooms[room_id] == 0) {
+            rooms[room_id] = 1;
+            cout << "Booked room: " << room_id << " [Thread " << thread_id << "]" << endl;
+            success_count++;
+        } else {
+            cout << "Failed to book room: " << room_id << " (already taken) [Thread " << thread_id << "]" << endl;
+        }
+    }
+}
+
+int main() {
+    srand(42);  // For reproducibility
+
+    // Uncomment to test with all rooms booked
+    // fill(begin(rooms), end(rooms), 1);
+
+    thread t1(bookRooms, 1);
+    thread t2(bookRooms, 2);
+    thread t3(bookRooms, 3);
+    thread t4(bookRooms, 4);
 
     t1.join();
     t2.join();
     t3.join();
     t4.join();
 
-    cout << endl << "Jhevan P. Baque" << endl;
-}
+    cout << "Total bookings: " << success_count << "/100" << endl;
+    cout << "Your Name" << endl;
 
-int main() {
-    ThreadedPrint();
+    saveToFile("parallel_bookings.txt");
     return 0;
 }
