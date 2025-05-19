@@ -2,98 +2,91 @@
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <cstdlib>  // rand, srand
-#include <ctime>    // time
-#include <cstring>  // memset
+#include <cstring>
+using namespace std;
 
 const int TOTAL_ROOMS = 50;
 int rooms[TOTAL_ROOMS];
-std::mutex room_mutex;
+mutex room_mutex;
 int successful_bookings = 0;
 
-// Resets the room array and booking counter
 void reset_rooms(int value = 0) {
-    std::lock_guard<std::mutex> lock(room_mutex);
-    std::memset(rooms, value, sizeof(rooms));
+    lock_guard<mutex> lock(room_mutex);
+    memset(rooms, value, sizeof(rooms));
     successful_bookings = 0;
 }
 
-// Booking function used by all test cases
 void book_rooms(int thread_id, int attempts) {
     for (int i = 0; i < attempts; ++i) {
         int room_to_book = rand() % TOTAL_ROOMS;
 
-        std::lock_guard<std::mutex> lock(room_mutex);
+        lock_guard<mutex> lock(room_mutex);
         if (rooms[room_to_book] == 0) {
             rooms[room_to_book] = 1;
             ++successful_bookings;
-            std::cout << "Booked room: " << room_to_book << std::endl;
+            cout << "Booked room: " << room_to_book << endl;
         } else {
-            std::cout << "Failed to book room: " << room_to_book << " (already taken)" << std::endl;
+            cout << "Failed to book room: " << room_to_book << " (already taken)" << endl;
         }
     }
 }
 
-// -------------------- Test Cases --------------------
+// Test Case
 
-void test_case_1_all_rooms_available() {
-    std::cout << "\nTest Case 1: All Rooms Available\n";
-    reset_rooms(0); // All rooms are available
+void TestCase1() {
+    reset_rooms(0); 
     for (int i = 0; i < TOTAL_ROOMS; ++i) {
-        std::lock_guard<std::mutex> lock(room_mutex);
+        lock_guard<mutex> lock(room_mutex);
         rooms[i] = 0;
         rooms[i] = 1;
         ++successful_bookings;
-        std::cout << "Booked room: " << i << std::endl;
+        cout << "Booked room: " << i << endl;
     }
-    std::cout << "Total bookings: " << successful_bookings << "/50\n";
+    cout << "Total bookings: " << successful_bookings << "/50\n";
 }
 
-void test_case_2_fully_booked() {
-    std::cout << "\nTest Case 2: Fully Booked Hotel\n";
-    reset_rooms(1); // All rooms already booked
+void TestCase2() {
+    reset_rooms(1);
 
     for (int i = 0; i < 100; ++i) {
         int room_to_book = rand() % TOTAL_ROOMS;
 
-        std::lock_guard<std::mutex> lock(room_mutex);
+        lock_guard<mutex> lock(room_mutex);
         if (rooms[room_to_book] == 0) {
             rooms[room_to_book] = 1;
             ++successful_bookings;
-            std::cout << "Booked room: " << room_to_book << std::endl;
+            cout << "Booked room: " << room_to_book << endl;
         } else {
-            std::cout << "Failed to book room: " << room_to_book << " (already taken)" << std::endl;
+            cout << "Failed to book room: " << room_to_book << " (already taken)" << endl;
         }
     }
-    std::cout << "Total bookings: " << successful_bookings << "/100\n";
+    cout << "Total bookings: " << successful_bookings << "/100\n";
 }
 
-void test_case_3_random_bookings() {
-    std::cout << "\nTest Case 3: Random Bookings (Seed = 42)\n";
+void TestCase3() {
     reset_rooms(0);
     srand(42);
 
     for (int i = 0; i < 100; ++i) {
         int room_to_book = rand() % TOTAL_ROOMS;
 
-        std::lock_guard<std::mutex> lock(room_mutex);
+        lock_guard<mutex> lock(room_mutex);
         if (rooms[room_to_book] == 0) {
             rooms[room_to_book] = 1;
             ++successful_bookings;
-            std::cout << "Booked room: " << room_to_book << std::endl;
+            cout << "Booked room: " << room_to_book << endl;
         } else {
-            std::cout << "Failed to book room: " << room_to_book << " (already taken)" << std::endl;
+            cout << "Failed to book room: " << room_to_book << " (already taken)" << endl;
         }
     }
-    std::cout << "Total bookings: " << successful_bookings << "/100\n";
+    cout << "Total bookings: " << successful_bookings << "/100\n";
 }
 
-void test_case_4_parallel_thread_safety() {
-    std::cout << "\nTest Case 4: Parallel Thread Safety\n";
+void TestCase4() {
     reset_rooms(0);
-    srand(42); // Optional: keep deterministic
+    srand(42);
 
-    std::vector<std::thread> threads;
+    vector<thread> threads;
     for (int i = 0; i < 4; ++i) {
         threads.emplace_back(book_rooms, i, 25);
     }
@@ -102,17 +95,25 @@ void test_case_4_parallel_thread_safety() {
         t.join();
     }
 
-    std::cout << "Total bookings: " << successful_bookings << "/100\n";
+    cout << "Total bookings: " << successful_bookings << "/100\n";
 }
 
-// -------------------- Main --------------------
 
 int main() {
-    // Run each test case one by one
-    test_case_1_all_rooms_available();
-    test_case_2_fully_booked();
-    test_case_3_random_bookings();
-    test_case_4_parallel_thread_safety();
+    int choice = 0;
+    cout << "Select a Test Case: \n1: All Rooms Available\n2: Fully Booked Hotel\n3: Random Bookings (Seed = 42)\n4: Parallel Thread Safety\n: ";
+    cin >> choice;
+    if (choice == 1) {
+        TestCase1();
+    }else if(choice == 2) {
+        TestCase2();
+    }else if(choice == 3) {
+        TestCase3();
+    }else if(choice == 4) {
+        TestCase4();
+    }else {
+        cout << "Invalid Choice!" << endl;
+    }
 
     return 0;
 }
